@@ -115,9 +115,9 @@ curl http://localhost:8080/api/v1/bookings/BOOKING_REF
 Service unit tests:
 
 ```bash
-cd services/browse && pytest
-cd services/booking && pytest
-cd services/payment && pytest
+cd services/browse && python -m pytest
+cd services/booking && python -m pytest
+cd services/payment && python -m pytest
 ```
 
 Integration test with a short hold TTL:

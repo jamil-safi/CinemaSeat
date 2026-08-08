@@ -16,6 +16,8 @@ jobs:
   backend-unit:
     name: Backend unit (${{ matrix.service }})
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}/services/${{ matrix.service }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +40,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run unit tests
-        run: pytest -q
+        run: python -m pytest -q
 
   frontend:
     name: Frontend build
