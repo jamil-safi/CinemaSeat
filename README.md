@@ -2,12 +2,15 @@
 
 Minimal FastAPI microservices for browsing cinema shows, holding a seat safely, and completing payment through the supplied gateway.
 
+## 🎥 Project Demo
+
+[![CinemaSeat Demo](https://img.youtube.com/vi/fh_w8TnPm-k/hqdefault.jpg)](https://youtu.be/fh_w8TnPm-k)
 ## Live deployment
 
 **Application:** [http://54.255.247.116:8080/](http://54.255.247.116:8080/)
 
 **Health check:** [http://54.255.247.116:8080/health](http://54.255.247.116:8080/health)
-**Yutube link:** [https://youtu.be/fh_w8TnPm-k]
+
 
 The deployment runs on an Amazon Linux EC2 instance. Port `8080` must be allowed by the instance security group.
 
