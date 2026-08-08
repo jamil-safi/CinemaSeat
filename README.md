@@ -1,6 +1,11 @@
+
 # CinemaSeat
 
 Minimal FastAPI microservices for browsing cinema shows, holding a seat safely, and completing payment through the supplied gateway.
+## 🎥 Project Demo
+
+[![CinemaSeat Demo](https://img.youtube.com/vi/fh_w8TnPm-k/hqdefault.jpg)](https://youtu.be/fh_w8TnPm-k)
+
 
 ## Live deployment
 
