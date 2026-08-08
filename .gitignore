@@ -9,3 +9,4 @@ postgres_data/
 redis_data/
 frontend/node_modules/
 frontend/dist/
+.env.example
