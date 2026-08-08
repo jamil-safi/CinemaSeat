@@ -4,7 +4,8 @@ Minimal FastAPI microservices for browsing cinema shows, holding a seat safely, 
 
 ## 🎥 Project Demo
 
-[![CinemaSeat Demo](https://img.youtube.com/vi/fh_w8TnPm-k/hqdefault.jpg)](https://youtu.be/fh_w8TnPm-k)
+**Yutube link:** [https://youtu.be/fh_w8TnPm-k]
+
 ## Live deployment
 
 **Application:** [http://54.255.247.116:8080/](http://54.255.247.116:8080/)
