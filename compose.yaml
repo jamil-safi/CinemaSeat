@@ -1,0 +1,110 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cinema
+      POSTGRES_PASSWORD: cinema
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init-databases.sh:/docker-entrypoint-initdb.d/01-init-databases.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinema -d postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  gateway:
+    image: asifmahmoud414/mock-gateway:latest
+    ports:
+      - "${GATEWAY_PORT:-9000}:9000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  browse:
+    image: ghcr.io/${GHCR_OWNER:-local}/cinemaseat-browse:${IMAGE_TAG:-latest}
+    build: ./services/browse
+    environment:
+      DATABASE_URL: postgresql+asyncpg://cinema:cinema@postgres:5432/browse_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  booking:
+    image: ghcr.io/${GHCR_OWNER:-local}/cinemaseat-booking:${IMAGE_TAG:-latest}
+    build: ./services/booking
+    environment:
+      DATABASE_URL: postgresql+asyncpg://cinema:cinema@postgres:5432/booking_db
+      REDIS_URL: redis://redis:6379/0
+      BROWSE_SERVICE_URL: http://browse:8000
+      PAYMENT_SERVICE_URL: http://payment:8000
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-change-me}
+      HOLD_TTL_SECONDS: ${HOLD_TTL_SECONDS:-30}
+      PAYMENT_PENDING_TTL_SECONDS: ${PAYMENT_PENDING_TTL_SECONDS:-60}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      browse:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  payment:
+    image: ghcr.io/${GHCR_OWNER:-local}/cinemaseat-payment:${IMAGE_TAG:-latest}
+    build: ./services/payment
+    environment:
+      DATABASE_URL: postgresql+asyncpg://cinema:cinema@postgres:5432/payment_db
+      GATEWAY_BASE_URL: http://gateway:9000
+      BOOKING_SERVICE_URL: http://booking:8000
+      PUBLIC_BASE_URL: http://nginx
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:-change-me}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/live')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  nginx:
+    image: ghcr.io/${GHCR_OWNER:-local}/cinemaseat-web:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: infra/nginx/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      browse:
+        condition: service_healthy
+      booking:
+        condition: service_healthy
+      payment:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

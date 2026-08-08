@@ -1,0 +1,11 @@
+.env
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.py[cod]
+.venv/
+postgres_data/
+redis_data/
+frontend/node_modules/
+frontend/dist/
