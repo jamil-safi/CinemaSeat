@@ -23,6 +23,8 @@ flowchart LR
 
 Temporary hold ownership is atomic in Redis. Confirmed seats have a unique `(showtime_id, seat_id)` constraint in PostgreSQL. Duplicate payment callbacks are stored once by `event_id`.
 
+All application images use multi-stage builds. Python services copy only their runtime virtual environments and application code into non-root final images; the web image copies only the compiled React assets into Nginx.
+
 ## Run locally
 
 Requirements: Docker with Docker Compose.

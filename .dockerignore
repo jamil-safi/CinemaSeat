@@ -7,3 +7,10 @@ frontend/node_modules
 frontend/dist
 postgres_data
 redis_data
+services/
+tests/
+docs/
+README.md
+Makefile
+requirements-dev.txt
+compose.yaml

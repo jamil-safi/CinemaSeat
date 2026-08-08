@@ -19,6 +19,7 @@ def test_frontend_and_catalog_are_available_from_the_same_origin() -> None:
     script_path = re.search(r'<script[^>]+src="([^"]+\.js)"', page.text).group(1)
     script = httpx.get(f"{BASE_URL}{script_path}", timeout=5)
     assert script.status_code == 200
+    assert "javascript" in script.headers["content-type"]
     assert "/api/v1" in script.text
 
     assert movies.status_code == 200
